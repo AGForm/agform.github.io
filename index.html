@@ -1,12 +1,897 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AGForm Landing Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>AG Form | Andrea Gonnella</title>
+  
+  <!-- ========== FAVICON ========== -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#070A12">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    :root{
+      --bg:#070A12;
+      --bg2:#0B1430;
+      --txt:#EAF0FF;
+      --mut:rgba(234,240,255,.72);
+      --line:rgba(255,255,255,.14);
+      --shadow: 0 30px 90px rgba(0,0,0,.55);
+      --r: 22px;
+      --gA: linear-gradient(135deg, #FF8A3C 0%, #E91E63 100%);
+      --gG: linear-gradient(135deg, #1E88E5 0%, #26C281 100%);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+
+    body{
+      font-family: Montserrat, system-ui, -apple-system, sans-serif;
+      min-height:100vh;
+      min-height: 100dvh;
+      color:var(--txt);
+      background:
+        radial-gradient(900px 700px at 12% 18%, rgba(233,30,99,.22), transparent 60%),
+        radial-gradient(900px 700px at 85% 22%, rgba(30,136,229,.22), transparent 60%),
+        radial-gradient(900px 700px at 55% 88%, rgba(38,194,129,.18), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      /* FIX: rimosso overflow:hidden dal body — bloccava lo scroll su mobile */
+      padding: 12px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .veil{
+      position:fixed; inset:0;
+      background:
+        radial-gradient(1200px 800px at 50% 40%, rgba(255,255,255,.06), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.9), rgba(0,0,0,.92));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      animation: veilOut 900ms cubic-bezier(.2,.9,.2,1) forwards;
+      animation-delay: 850ms;
+    }
+    .veil .dot{
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      background: white;
+      box-shadow: 0 0 0 0 rgba(255,255,255,.20);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%{transform:scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,.18)}
+      60%{transform:scale(1.2); box-shadow: 0 0 0 22px rgba(255,255,255,0)}
+      100%{transform:scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0)}
+    }
+    @keyframes veilOut{
+      to{opacity:0; transform: translateY(-10px); pointer-events:none}
+    }
+
+    .scan{
+      position:fixed; inset:0;
+      background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,.05) 50%, transparent 100%);
+      opacity:.08;
+      transform: translateY(-120%);
+      animation: scan 6s linear infinite;
+      pointer-events:none;
+      mix-blend-mode: overlay;
+    }
+    @keyframes scan{ to{transform: translateY(120%)} }
+
+    .container{
+      width:min(1100px, 100%);
+      height: min(95vh, 850px);
+      position:relative;
+    }
+
+    .stage{
+      height: 100%;
+      border-radius: var(--r);
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.05));
+      box-shadow: var(--shadow);
+      /* FIX: era overflow:hidden — tagliava il contenuto su mobile */
+      overflow: hidden;
+      padding: 40px 35px;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .stage::before{
+      content:"";
+      position:absolute; inset:-50%;
+      background: conic-gradient(from 190deg,
+        rgba(255,107,53,.18),
+        rgba(233,30,99,.20),
+        rgba(30,136,229,.20),
+        rgba(38,194,129,.14),
+        rgba(255,107,53,.18));
+      filter: blur(34px);
+      opacity:.55;
+      animation: spin 18s linear infinite;
+      z-index: 0;
+    }
+    @keyframes spin{to{transform: rotate(360deg)}}
+    .stage > *{position:relative; z-index:1}
+
+    .logo-wrapper{
+      cursor: pointer;
+      transition: transform .25s ease, opacity .6s ease;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 16px;
+      user-select:none;
+      position: absolute;
+      inset: 0;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: auto;
+    }
+    .logo-wrapper:hover:not(.transforming){ transform: scale(1.04); }
+    .logo-wrapper.transforming{ 
+      pointer-events:none;
+      animation: fadeToWhite 0.5s ease-out forwards;
+    }
+    .logo-wrapper.hidden{
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    @keyframes fadeToWhite{
+      0%{transform: scale(1); opacity: 1; filter: brightness(1) blur(0px);}
+      60%{transform: scale(1.05); opacity: 0.8; filter: brightness(1.8) blur(3px);}
+      100%{transform: scale(1.1); opacity: 0; filter: brightness(3) blur(8px);}
+    }
+
+    #particleCanvas{
+      display:block;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,.5));
+      transition: opacity .8s ease;
+      max-width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .hint{
+      font-size: 0.85rem;
+      color: #FFFFFF;
+      opacity: 0.9;
+      animation: pulseHint 3s ease-in-out infinite;
+      white-space:nowrap;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    @keyframes pulseHint{
+      0%,100%{opacity:.9}
+      50%{opacity:.6}
+    }
+    .hint.hidden{ opacity: 0 !important; }
+
+    /* ========== LAYOUT NAME DISPLAY ========== */
+    .name-display{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      padding: 30px;
+      gap: 0;
+      opacity:0;
+      visibility: hidden;
+      pointer-events:none;
+      text-align:center;
+      /* FIX: overflow nascosto ma scroll abilitato — il trucco chiave */
+      overflow: hidden;
+      z-index: 5;
+    }
+    .name-display.active{
+      opacity:1 !important;
+      visibility:visible !important;
+      pointer-events:auto !important;
+      animation: fadeInFromWhite 0.6s ease-out forwards;
+      z-index: 50 !important;
+    }
+
+    @keyframes fadeInFromWhite{
+      from { opacity: 0; filter: brightness(2) blur(5px); transform: scale(1.05); }
+      to { opacity: 1; filter: brightness(1) blur(0); transform: scale(1); }
+    }
+
+    .profile-header{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 18px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .name-display.active .profile-header{
+      animation: slideUp .5s ease-out forwards;
+      animation-delay: .1s;
+    }
+
+    .logo-large{
+      width: 110px;
+      height: auto;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,.4));
+      flex-shrink: 0;
+    }
+
+    .name-info{ text-align: left; }
+
+    .main-name{
+      font-size: clamp(2.5rem, 5.5vw, 3.8rem);
+      font-weight: 900;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      color: var(--txt);
+      text-shadow: 
+        0 1px 0 rgba(255,255,255,.1),
+        0 2px 0 rgba(255,255,255,.08),
+        0 3px 0 rgba(255,255,255,.06),
+        0 8px 20px rgba(0,0,0,.4),
+        0 12px 40px rgba(0,0,0,.3);
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,.2));
+    }
+
+    .role-badge{
+      display: inline-block;
+      background: transparent;
+      border: none;
+      padding: 0;
+      border-radius: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--mut);
+      position: relative;
+    }
+    .role-badge::after{
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--mut), transparent);
+      opacity: 0.4;
+    }
+
+    .expertise-tabs{
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 18px;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    .name-display.active .expertise-tabs{
+      animation: slideUp .5s ease-out forwards;
+      animation-delay: .2s;
+    }
+
+    .tabs-nav{
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-btn{
+      padding: 8px 16px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 20px;
+      color: var(--mut);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all .3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tab-btn:hover{
+      background: rgba(255,255,255,.09);
+      border-color: rgba(255,255,255,.2);
+      transform: translateY(-2px);
+    }
+    .tab-btn.active{
+      background: var(--gA);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255,138,60,.3);
+    }
+
+    .tab-content{
+      display: none;
+      padding: 16px 20px;
+      background: rgba(255,255,255,.04);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      min-height: 100px;
+    }
+    .tab-content.active{
+      display: block;
+      animation: fadeInContent .3s ease;
+    }
+    @keyframes fadeInContent{
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .expertise-list{
+      list-style: none;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .expertise-list li{
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--mut);
+      padding-left: 20px;
+      position: relative;
+    }
+    .expertise-list li::before{
+      content: '•';
+      position: absolute;
+      left: 6px;
+      background: var(--gA);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 900;
+      font-size: 1.2em;
+    }
+
+    .contacts-inline{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(10px);
+      width: 100%;
+      max-width: 680px;
+      position: relative;
+      z-index: 100;
+    }
+    .name-display.active .contacts-inline{
+      animation: slideUp .5s ease-out forwards;
+      animation-delay: .3s;
+    }
+
+    .contact-link{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 18px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+      text-decoration: none;
+      color: var(--txt);
+      transition: all .25s ease;
+      width: 100%;
+      justify-content: flex-start;
+      cursor: pointer !important;
+      pointer-events: auto !important;
+      position: relative;
+      z-index: 101;
+    }
+    .contact-link:hover{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.20);
+      transform: translateX(4px);
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    }
+    .contact-link:active,
+    .contact-link:focus{
+      outline: 2px solid rgba(255,255,255,.3);
+      outline-offset: 2px;
+    }
+    .contact-link .icon{
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .contact-link:hover .icon{ opacity: 1; transform: scale(1.1); }
+    .contact-link .text{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      text-align: left;
+      flex: 1;
+      pointer-events: none;
+    }
+    .contact-link .label{
+      font-size: 0.75rem;
+      color: var(--mut);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .contact-link .value{
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--txt);
+    }
+
+    .copy-btn{
+      flex-shrink: 0;
+      width: 32px; height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .25s ease;
+      pointer-events: auto !important;
+    }
+    .copy-btn:hover{ background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.25); transform: scale(1.1); }
+    .copy-btn:active{ transform: scale(0.95); }
+    .copy-btn .icon{ width: 16px; height: 16px; stroke: var(--txt); stroke-width: 2.5; }
+
+    .copy-feedback{
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      z-index: 100000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .copy-feedback.show{ opacity: 1; }
+
+    @keyframes slideUp{ to{ opacity:1; transform: translateY(0); } }
+
+    /* ============================================================
+       RESPONSIVE MOBILE — STRATEGIA "LOCKED"
+       Il contenuto NON scrolla mai: si comprime per stare
+       dentro lo schermo usando flex-shrink e dimensioni dvh.
+
+       TECNICA:
+       1. body/container/stage: tutti overflow:hidden
+       2. .name-display: position:absolute inset:0, overflow:hidden
+          → stesso box del genitore, mai fuori
+       3. I figli usano flex-shrink:1 + min-height:0
+          → si comprimono autonomamente se lo spazio è poco
+       4. Font/padding/gap scalano con clamp() e dvh units
+    ============================================================ */
+    @media (max-width: 768px){
+
+      body{
+        padding: 0;
+        overflow: hidden;          /* LOCKED: niente scroll sul body */
+        height: 100dvh;
+      }
+
+      .container{
+        width: 100vw;
+        height: 100dvh;
+        overflow: hidden;          /* LOCKED */
+      }
+
+      .stage{
+        overflow: hidden;          /* LOCKED */
+        height: 100dvh;
+        min-height: unset;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Logo iniziale centrato */
+      .logo-wrapper{
+        justify-content: center;
+        padding-top: 0;
+      }
+
+      .hint{
+        bottom: max(36px, calc(env(safe-area-inset-bottom, 0px) + 22px)) !important;
+        font-size: 0.78rem !important;
+        color: #FFFFFF !important;
+        opacity: 1 !important;
+        font-weight: 800 !important;
+        text-shadow:
+          0 0 15px rgba(255,255,255,0.8),
+          0 3px 15px rgba(0,0,0,1) !important;
+        background: rgba(0,0,0,0.6) !important;
+        padding: 8px 16px !important;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
+      /* ---- NAME DISPLAY: box locked, mai overflow ---- */
+      .name-display{
+        /* Rimane position:absolute inset:0 — stesso box del .stage */
+        position: absolute;
+        inset: 0;
+        overflow: hidden;          /* LOCKED — niente scroll */
+        /* Padding safe area: top notch, bottom toolbar */
+        padding:
+          max(16px, env(safe-area-inset-top, 16px))
+          14px
+          max(16px, env(safe-area-inset-bottom, 16px));
+        gap: clamp(6px, 1.5dvh, 14px);   /* gap si riduce sugli schermi bassi */
+        justify-content: center;
+        align-items: center;
+      }
+
+      .name-display.active{
+        display: flex !important;
+      }
+
+      /* MOBILE: Logo SOPRA nome — si comprime */
+      .profile-header{
+        flex-direction: column;
+        gap: clamp(6px, 1.2dvh, 12px);
+        align-items: center;
+        margin-bottom: 0;
+        flex-shrink: 1;            /* può restringersi se serve */
+      }
+
+      .name-info{ text-align: center; width: 100%; }
+
+      .logo-large{
+        /* Si scala tra 60px e 90px in base all'altezza disponibile */
+        width: clamp(60px, 10dvh, 90px);
+        flex-shrink: 1;
+      }
+
+      .main-name{
+        font-size: clamp(1.6rem, 5.5dvh, 2.8rem);
+        line-height: 1;
+        margin-bottom: clamp(4px, 0.8dvh, 10px);
+        letter-spacing: -0.04em;
+      }
+
+      .role-badge{
+        font-size: clamp(0.62rem, 1.5dvh, 0.78rem);
+        letter-spacing: 2px;
+      }
+
+      /* Le tabs si comprimono prendendo lo spazio residuo */
+      .expertise-tabs{
+        width: 100%;
+        margin-bottom: 0;
+        flex-shrink: 1;
+        min-height: 0;             /* fondamentale: senza questo flex ignora il shrink */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tabs-nav{
+        gap: 5px;
+        margin-bottom: clamp(6px, 1dvh, 10px);
+        flex-shrink: 0;
+      }
+
+      .tab-btn{
+        font-size: clamp(0.6rem, 1.5dvh, 0.72rem);
+        padding: clamp(5px, 1dvh, 7px) clamp(9px, 2vw, 13px);
+        font-weight: 700;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.15);
+      }
+
+      /* Il contenuto della tab si comprime senza tagliare */
+      .tab-content{
+        padding: clamp(8px, 1.5dvh, 12px) 12px;
+        min-height: unset;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .expertise-list{ gap: clamp(4px, 0.8dvh, 7px); }
+
+      .expertise-list li{
+        font-size: clamp(0.68rem, 1.6dvh, 0.78rem);
+        line-height: 1.35;
+      }
+
+      /* I contatti si comprimono */
+      .contacts-inline{
+        gap: clamp(5px, 1dvh, 8px);
+        max-width: 100%;
+        flex-shrink: 1;
+        min-height: 0;
+      }
+
+      .contact-link{
+        padding: clamp(6px, 1.2dvh, 9px) 12px;
+        flex-shrink: 1;
+      }
+
+      .contact-link .icon{ width: 16px; height: 16px; }
+      .contact-link .label{ font-size: clamp(0.62rem, 1.3dvh, 0.7rem); }
+
+      .contact-link .value{
+        font-size: clamp(0.7rem, 1.6dvh, 0.8rem);
+        color: var(--txt) !important;
+        -webkit-text-fill-color: var(--txt) !important;
+      }
+
+      .copy-btn{ width: 26px; height: 26px; }
+      .copy-btn .icon{ width: 13px; height: 13px; }
+    }
+
+    /* Schermi molto stretti in larghezza */
+    @media (max-width: 375px){
+      .tabs-nav{ flex-wrap: wrap; }
+      .tab-btn{ font-size: 0.62rem; padding: 5px 9px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none !important; transition:none !important}
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to AGForm</h1>
-    <button>Scopri i servizi</button>
+  <div class="veil" aria-hidden="true"><div class="dot"></div></div>
+  <div class="scan" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="stage">
+      <!-- LOGO INIZIALE -->
+      <div class="logo-wrapper" id="logoWrapper" title="Interagisci per visualizzare i contatti">
+        <canvas id="particleCanvas"></canvas>
+      </div>
+      
+      <!-- HINT FUORI dal wrapper -->
+      <div class="hint" id="hint">Premi per continuare</div>
+
+      <!-- LAYOUT COMPATTO SENZA SCROLL (desktop) / CON SCROLL (mobile) -->
+      <div class="name-display" id="nameDisplay" aria-live="polite">
+        
+        <div class="profile-header">
+          <img src="logo.png" alt="AG Form Logo" class="logo-large">
+          <div class="name-info">
+            <h1 class="main-name">Andrea Gonnella</h1>
+            <span class="role-badge">HR Training Manager</span>
+          </div>
+        </div>
+
+        <div class="expertise-tabs">
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="formazione">Formazione</button>
+            <button class="tab-btn" data-tab="fondi">Fondi</button>
+            <button class="tab-btn" data-tab="servizi">Servizi</button>
+            <button class="tab-btn" data-tab="hr">HR & Sviluppo</button>
+          </div>
+
+          <div class="tab-content active" id="formazione">
+            <ul class="expertise-list">
+              <li>Formazione finanziata e a catalogo</li>
+              <li>Analisi del bisogno formativo</li>
+              <li>Progettazione formativa personalizzata</li>
+              <li>Erogazione e docenze specialistiche</li>
+            </ul>
+          </div>
+          <div class="tab-content" id="fondi">
+            <ul class="expertise-list">
+              <li>Accesso ai fondi regionali</li>
+              <li>Gestione dei fondi interprofessionali</li>
+              <li>Rendicontazione e compliance</li>
+              <li>Supporto amministrativo completo</li>
+            </ul>
+          </div>
+          <div class="tab-content" id="servizi">
+            <ul class="expertise-list">
+              <li>Sistema qualità aziendale</li>
+              <li>Certificazione delle competenze</li>
+              <li>Audit e valutazione processi</li>
+              <li>Consulenza strategica formativa</li>
+            </ul>
+          </div>
+          <div class="tab-content" id="hr">
+            <ul class="expertise-list">
+              <li>Upskilling e reskilling del personale</li>
+              <li>Onboarding strutturato</li>
+              <li>Outboarding e transizioni di carriera</li>
+              <li>Piani di sviluppo individuali</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="contacts-inline">
+          <a href="mailto:andrea.gonnella@agform.it" class="contact-link">
+            <i data-lucide="mail" class="icon"></i>
+            <span class="text">
+              <span class="label">Email</span>
+              <span class="value">andrea.gonnella@agform.it</span>
+            </span>
+          </a>
+          <a href="tel:+393661055025" class="contact-link">
+            <i data-lucide="phone" class="icon"></i>
+            <span class="text">
+              <span class="label">Telefono</span>
+              <span class="value">+39 366 105 5025</span>
+            </span>
+          </a>
+          <a href="https://wa.me/393661055025" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <i data-lucide="message-circle" class="icon"></i>
+            <span class="text">
+              <span class="label">WhatsApp</span>
+              <span class="value">+39 366 105 5025</span>
+            </span>
+          </a>
+          <a href="https://agform.github.io/landing.html" target="_blank" rel="noopener noreferrer" class="contact-link">
+            <i data-lucide="globe" class="icon"></i>
+            <span class="text">
+              <span class="label">Sito Web</span>
+              <span class="value">Premi per visitare la landing page</span>
+            </span>
+          </a>
+          <div class="contact-link">
+            <i data-lucide="file-text" class="icon"></i>
+            <span class="text">
+              <span class="label">Partita IVA/CF</span>
+              <span class="value" id="piva">00000000000</span>
+            </span>
+            <button class="copy-btn" onclick="copyPIVA()" aria-label="Copia Partita IVA">
+              <i data-lucide="copy" class="icon"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="copy-feedback" id="copyFeedback">Partita IVA copiata!</div>
+
+  <script>
+    lucide.createIcons();
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    function copyPIVA() {
+      const piva = document.getElementById('piva').textContent;
+      const feedback = document.getElementById('copyFeedback');
+      navigator.clipboard.writeText(piva).then(() => {
+        feedback.classList.add('show');
+        setTimeout(() => feedback.classList.remove('show'), 2000);
+      }).catch(err => console.error('Errore copia:', err));
+    }
+
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const logoWrapper = document.getElementById('logoWrapper');
+    const nameDisplay = document.getElementById('nameDisplay');
+    const hint = document.getElementById('hint');
+
+    let transformed = false;
+    let logoImage = null;
+
+    function setCanvasSize(){
+      const stage = document.querySelector('.stage');
+      const stageRect = stage.getBoundingClientRect();
+      const isMobile = window.innerWidth <= 768;
+      if (isMobile) {
+        const size = Math.min(stageRect.width - 40, window.innerHeight - 100);
+        canvas.width = size;
+        canvas.height = size;
+      } else {
+        const size = Math.min(stageRect.width - 80, stageRect.height - 100, 420);
+        canvas.width = size;
+        canvas.height = size;
+      }
+    }
+
+    function drawFallbackLogo(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const g = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+      g.addColorStop(0,'#FF8A3C');
+      g.addColorStop(0.5,'#E91E63');
+      g.addColorStop(1,'#1E88E5');
+      ctx.fillStyle = g;
+      const fontSize = Math.min(canvas.width, canvas.height) * 0.31;
+      ctx.font = `900 ${fontSize}px Montserrat, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('AG', centerX, centerY - fontSize * 0.15);
+      const g2 = ctx.createLinearGradient(0,centerY,canvas.width,canvas.height);
+      g2.addColorStop(0,'#1E88E5');
+      g2.addColorStop(1,'#26C281');
+      ctx.fillStyle = g2;
+      ctx.font = `800 ${fontSize * 0.35}px Montserrat, sans-serif`;
+      ctx.fillText('FORM', centerX, centerY + fontSize * 0.55);
+    }
+
+    function loadAndDrawLogo(){
+      setCanvasSize();
+      logoImage = new Image();
+      logoImage.src = 'logo.png';
+      logoImage.onload = () => {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        const scale = Math.min(canvas.width / logoImage.width, canvas.height / logoImage.height) * 0.65;
+        const w = logoImage.width * scale;
+        const h = logoImage.height * scale;
+        const x = (canvas.width - w) / 2;
+        const y = (canvas.height - h) / 2;
+        ctx.drawImage(logoImage, x, y, w, h);
+      };
+      logoImage.onerror = () => drawFallbackLogo();
+    }
+
+    function transform(){
+      if (transformed) return;
+      transformed = true;
+
+      logoWrapper.classList.add('transforming');
+      if (hint) hint.classList.add('hidden');
+      
+      setTimeout(() => {
+        logoWrapper.classList.add('hidden');
+        logoWrapper.style.display = 'none';
+        canvas.style.opacity = '0';
+        canvas.style.display = 'none';
+
+        nameDisplay.style.opacity = '';
+        nameDisplay.style.visibility = '';
+        nameDisplay.classList.add('active');
+
+        setTimeout(() => lucide.createIcons(), 100);
+      }, 500);
+    }
+
+    logoWrapper.addEventListener('click', transform);
+    window.addEventListener('resize', () => {
+      if (!transformed) loadAndDrawLogo();
+    });
+
+    loadAndDrawLogo();
+  </script>
 </body>
 </html>
