@@ -852,7 +852,7 @@
     function loadAndDrawLogo(){
       setCanvasSize();
       logoImage = new Image();
-      logoImage.src = 'logo.png';
+      logoImage.src = 'logo2.png';
       logoImage.onload = () => {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         const scale = Math.min(canvas.width / logoImage.width, canvas.height / logoImage.height) * 0.65;
