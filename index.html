@@ -164,6 +164,30 @@
       pointer-events: none;
     }
 
+    .hint{
+      font-size: 0.85rem;
+      color: #FFFFFF;
+      opacity: 0.9;
+      animation: pulseHint 3s ease-in-out infinite;
+      white-space:nowrap;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 99999;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    @keyframes pulseHint{
+      0%,100%{opacity:.9}
+      50%{opacity:.6}
+    }
+    .hint.hidden{ opacity: 0 !important; }
+
     /* ========== LAYOUT NAME DISPLAY ========== */
     .name-display{
       position:absolute;
@@ -502,6 +526,22 @@
         padding-top: 0;
       }
 
+      .hint{
+        bottom: max(36px, calc(env(safe-area-inset-bottom, 0px) + 22px)) !important;
+        font-size: 0.78rem !important;
+        color: #FFFFFF !important;
+        opacity: 1 !important;
+        font-weight: 800 !important;
+        text-shadow:
+          0 0 15px rgba(255,255,255,0.8),
+          0 3px 15px rgba(0,0,0,1) !important;
+        background: rgba(0,0,0,0.6) !important;
+        padding: 8px 16px !important;
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
       /* ---- NAME DISPLAY: box locked, mai overflow ---- */
       .name-display{
         /* Rimane position:absolute inset:0 — stesso box del .stage */
@@ -639,6 +679,9 @@
         <canvas id="particleCanvas"></canvas>
       </div>
 
+      <!-- HINT FUORI dal wrapper -->
+      <div class="hint" id="hint">Premi per continuare</div>
+
       <!-- LAYOUT COMPATTO SENZA SCROLL (desktop) / CON SCROLL (mobile) -->
       <div class="name-display" id="nameDisplay" aria-live="polite">
         
@@ -771,6 +814,7 @@
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const logoWrapper = document.getElementById('logoWrapper');
     const nameDisplay = document.getElementById('nameDisplay');
+    const hint = document.getElementById('hint');
 
     let transformed = false;
     let logoImage = null;
@@ -833,6 +877,7 @@
       transformed = true;
 
       logoWrapper.classList.add('transforming');
+      if (hint) hint.classList.add('hidden');
       
       setTimeout(() => {
         logoWrapper.classList.add('hidden');
