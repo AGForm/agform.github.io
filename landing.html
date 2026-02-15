@@ -96,7 +96,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ========== INTRO LOADER CON LOGO.PNG ========== */
+        /* ========== INTRO LOADER CON LOGO2.PNG ========== */
         .intro-loader {
             position: fixed;
             inset: 0;
@@ -459,6 +459,12 @@
             align-items: center;
         }
 
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         .logo-img {
             height: 55px;
             width: auto;
@@ -469,6 +475,26 @@
         .logo-img:hover {
             filter: drop-shadow(0 0 30px rgba(255,138,60,0.6));
             transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text .ag {
+            background: linear-gradient(135deg, #FF6B35 0%, #E91E63 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-text .form {
+            background: linear-gradient(135deg, #1E88E5 0%, #26C281 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .header-cta {
@@ -543,9 +569,11 @@
             line-height: 1.6;
             margin-bottom: 3rem;
             color: var(--gray-medium);
-            max-width: 800px;
+            max-width: 900px;
             font-weight: 500;
             animation: fadeInUp 0.8s ease-out 0.2s both;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .hero-cta-group {
@@ -758,6 +786,29 @@
         .about-text strong {
             color: var(--white);
             font-weight: 700;
+        }
+
+        .about-text ul {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .about-text ul li {
+            padding: 0.8rem 0 0.8rem 2rem;
+            position: relative;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--gray-medium);
+        }
+
+        .about-text ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary-green);
+            font-weight: 900;
+            font-size: 1.3rem;
         }
 
         /* Services Section */
@@ -1053,6 +1104,10 @@
                 height: 45px;
             }
 
+            .logo-text {
+                font-size: 1.5rem;
+            }
+
             .header-cta {
                 padding: 0.7rem 1.5rem;
                 font-size: 0.85rem;
@@ -1150,17 +1205,17 @@
     </style>
 </head>
 <body>
-    <!-- ========== INTRO LOADER CON LOGO.PNG ========== -->
+    <!-- ========== INTRO LOADER CON LOGO2.PNG ========== -->
     <div class="intro-loader" id="introLoader">
         <div class="intro-particles" id="introParticles"></div>
         
         <div class="intro-logo">
-            <img src="logo.png" alt="AG Form" onerror="this.parentElement.innerHTML='<div style=\'font-size:4rem;font-weight:900;color:white;\'>AG</div>'">
+            <img src="logo2.png" alt="AG Form" onerror="this.parentElement.innerHTML='<div style=\'font-size:4rem;font-weight:900;color:white;\'>AG</div>'">
         </div>
         
         <div class="intro-text">
             <h2>AG Form</h2>
-            <p>Accesso ai fondi europei...</p>
+            <p>Formazione e sviluppo aziendale...</p>
         </div>
         
         <div class="intro-progress">
@@ -1191,7 +1246,12 @@
     <!-- Header -->
     <header class="header" id="header">
         <div class="header-content">
-            <img src="logo.png" alt="AG Form Logo" class="logo-img" onerror="this.style.display='none'">
+            <div class="logo-container">
+                <img src="logo2.png" alt="AG Form Logo" class="logo-img" onerror="this.style.display='none'">
+                <div class="logo-text">
+                    <span class="ag">AG</span> <span class="form">form</span>
+                </div>
+            </div>
             <a href="#contatti" class="header-cta">Consulenza Gratuita</a>
         </div>
     </header>
@@ -1207,9 +1267,9 @@
 
         <div class="hero-content fade-in">
             <h1>Forma il tuo team.<br>Senza spendere un euro.</h1>
-            <p class="hero-subtitle">Trasformo i fondi europei in opportunità concrete per la tua azienda. Ti guido passo dopo passo nell'accesso ai finanziamenti per la formazione.</p>
+            <p class="hero-subtitle">Ti aiuto ad utilizzare le tante opportunità di finanziamento e a trasformarle in azioni concrete per la tua azienda</p>
             <div class="hero-cta-group">
-                <a href="#contatti" class="btn-primary">Scopri se hai diritto ai fondi</a>
+                <a href="#contatti" class="btn-primary">Scopri come finanziare la formazione e sviluppare la crescita della tua azienda</a>
                 <a href="#come-funziona" class="btn-secondary">Come funziona</a>
             </div>
         </div>
@@ -1223,8 +1283,8 @@
                 <p>Finanziabile</p>
             </div>
             <div class="stat-item">
-                <h3>0€</h3>
-                <p>Anticipo richiesto</p>
+                <h3>Gratis</h3>
+                <p>Consulenza gratuita</p>
             </div>
             <div class="stat-item">
                 <h3>Zero</h3>
@@ -1242,9 +1302,20 @@
             <div class="about-text">
                 <span class="label">Chi sono</span>
                 <h2>Andrea Gonnella</h2>
-                <p>Sono <strong>HR Training Manager</strong> e specialista in formazione finanziata. Da anni aiuto imprese, enti e professionisti a <strong>sbloccare opportunità di crescita</strong> attraverso i fondi europei.</p>
-                <p>La mia missione? <strong>Rendere accessibile ciò che sembra complesso.</strong> Mi occupo io della burocrazia, delle pratiche, della progettazione. Tu ti concentri su ciò che conta: far crescere il tuo team.</p>
-                <p>Con <strong>AG Form</strong> hai un partner che conosce ogni meccanismo dei bandi, ogni scadenza, ogni opportunità. E che lavora al tuo fianco fino al risultato.</p>
+                <p><strong>HR Training Manager</strong> con solida esperienza nella progettazione della formazione professionale. Attraverso metodologie innovative e partecipative, mi occupo del <strong>bisogno formativo aziendale</strong>, dalla progettazione all'erogazione dei programmi, fino alla rendicontazione attraverso il sostegno delle varie forme di finanziamento.</p>
+                
+                <p>Ho sviluppato una <strong>profonda conoscenza dei principali Fondi Interprofessionali</strong> grazie a molteplici esperienze professionali con diversi Enti di Formazione, e possiedo competenze avanzate per l'accreditamento regionale degli enti formativi e le procedure per il riconoscimento della certificazione della qualità per i servizi formativi.</p>
+                
+                <ul>
+                    <li>Docente formatore con evidenza dell'aggiornamento dell'Accordo Stato Regioni del 2025</li>
+                    <li>Certificazione regionale delle competenze</li>
+                    <li>Sviluppo di progetti formativi per ridurre i tempi di onboarding e favorire l'engagement</li>
+                    <li>Utilizzo della tecnologia per sviluppare processi formativi misurabili in termini di efficacia e soddisfazione</li>
+                </ul>
+
+                <p><strong>Prediligo il lavoro d'insieme</strong> come strumento fondamentale per le dinamiche produttive e relazionali, necessarie sia nei processi formativi che in quelli produttivi aziendali.</p>
+
+                <p>Con <strong>AG Form</strong> trasformo le opportunità di finanziamento in crescita concreta per la tua azienda, occupandomi di ogni aspetto tecnico e burocratico per permetterti di concentrarti sul business.</p>
             </div>
         </div>
     </section>
@@ -1392,7 +1463,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <img src="logo.png" alt="AG Form" class="footer-logo" onerror="this.style.display='none'">
+            <img src="logo2.png" alt="AG Form" class="footer-logo" onerror="this.style.display='none'">
             <p><strong>Andrea Gonnella</strong> - HR Training Manager</p>
             <p>Formazione finanziata e accesso ai fondi europei</p>
             <p style="margin-top: 1rem;">P.IVA/CF: 10495954030</p>
